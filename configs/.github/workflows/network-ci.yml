@@ -1,0 +1,23 @@
+name: Cisco Infrastructure CI
+
+on:
+push:
+pull_request:
+workflow_dispatch:
+
+jobs:
+validate:
+name: Validate Cisco configuration
+runs-on: ubuntu-latest
+
+steps:
+- name: Checkout repository
+uses: actions/checkout@v4
+
+- name: Set up Python
+uses: actions/setup-python@v5
+with:
+python-version: "3.12"
+
+- name: Validate router configuration
+run: python scripts/validate_config.py
