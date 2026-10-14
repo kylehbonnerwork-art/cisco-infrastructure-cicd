@@ -1,0 +1,4 @@
+cisco-infrastructure-cicd/
+└── ansible/
+    ├── ansible.cfg
+    └── inventory.yml
