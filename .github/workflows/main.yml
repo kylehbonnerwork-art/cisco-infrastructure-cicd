@@ -1,19 +1,9 @@
 name: Cisco Infrastructure CI/CD
 
-on:
-  push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
-
-  workflow_dispatch:
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
   validate:
-    name: Validate Router Configuration
     runs-on: ubuntu-latest
 
     steps:
