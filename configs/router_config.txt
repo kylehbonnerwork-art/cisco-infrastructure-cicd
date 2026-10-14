@@ -1,0 +1,7 @@
+hostname C8000V-LAB
+!
+interface Loopback100
+ description CI-CD-TEST
+ ip address 192.0.2.100 255.255.255.255
+!
+end
