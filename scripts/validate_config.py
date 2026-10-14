@@ -3,7 +3,7 @@
 """
 Basic validation for Cisco IOS XE configuration files.
 
-This script performs preliminary checks on configuration inputs.
+This script performs preliminary static checks.
 It does not connect to or configure a network device.
 """
 
@@ -17,11 +17,11 @@ REQUIRED_COMMANDS = [
     "hostname",
 ]
 
-FORBIDDEN_PATTERNS = [
+FORBIDDEN_COMMANDS = {
     "write erase",
     "erase startup-config",
     "reload",
-]
+}
 
 
 def validate_config(config_file: Path) -> bool:
@@ -31,28 +31,42 @@ def validate_config(config_file: Path) -> bool:
         print(f"ERROR: Configuration file not found: {config_file}")
         return False
 
-    config = config_file.read_text(encoding="utf-8")
-    normalized_config = config.lower()
+    try:
+        config = config_file.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        print(f"ERROR: Cannot read configuration file: {error}")
+        return False
 
     errors = []
 
     if not config.strip():
         errors.append("Configuration file is empty.")
 
-    for command in REQUIRED_COMMANDS:
+    commands = []
+
+    for line in config.splitlines():
+        line = line.strip()
+
+        # Ignore blank lines and Cisco IOS XE comments.
+        if not line or line.startswith("!"):
+            continue
+
+        commands.append(line.lower())
+
+    for required in REQUIRED_COMMANDS:
         if not any(
-            line.strip().lower().startswith(command + " ")
-            or line.strip().lower() == command
-            for line in config.splitlines()
+            command == required
+            or command.startswith(required + " ")
+            for command in commands
         ):
             errors.append(
-                f"Required configuration command is missing: {command}"
+                f"Required configuration command is missing: {required}"
             )
 
-    for pattern in FORBIDDEN_PATTERNS:
-        if pattern in normalized_config:
+    for command in commands:
+        if command in FORBIDDEN_COMMANDS:
             errors.append(
-                f"Potentially destructive command detected: {pattern}"
+                f"Potentially destructive command detected: {command}"
             )
 
     if errors:
