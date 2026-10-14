@@ -1,0 +1,16 @@
+---
+- name: Verify Cisco IOS XE device
+  hosts: cisco_iosxe
+  gather_facts: false
+
+  tasks:
+    - name: Gather device facts
+      cisco.ios.ios_facts:
+
+    - name: Display router hostname
+      ansible.builtin.debug:
+        msg: "Connected to Cisco IOS XE device: {{ ansible_net_hostname }}"
+
+    - name: Display IOS XE version
+      ansible.builtin.debug:
+        msg: "IOS XE version: {{ ansible_net_version }}"
