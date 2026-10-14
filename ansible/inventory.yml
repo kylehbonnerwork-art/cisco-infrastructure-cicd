@@ -1,4 +1,13 @@
-cisco-infrastructure-cicd/
-└── ansible/
-    ├── ansible.cfg
-    └── inventory.yml
+---
+all:
+  children:
+    cisco_iosxe:
+      hosts:
+        c8000v:
+          ansible_host: "{{ lookup('env', 'CISCO_HOST') }}"
+          ansible_port: "{{ lookup('env', 'CISCO_PORT') | default('22', true) }}"
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+        ansible_network_os: cisco.ios.ios
+        ansible_user: "{{ lookup('env', 'CISCO_USERNAME') }}"
+        ansible_password: "{{ lookup('env', 'CISCO_PASSWORD') }}"
